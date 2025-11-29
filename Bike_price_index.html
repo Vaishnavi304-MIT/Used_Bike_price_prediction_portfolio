@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Used Bike Price Predictor</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Poppins, sans-serif;
+        background: linear-gradient(135deg, #0b0f2e, #1d1f47, #0f0f25);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 30px;
+        color: white;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 750px;
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        animation: fadeIn 1s ease;
+        margin-bottom: 40px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(25px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 30px;
+        color: #00eaff;
+        text-shadow: 0px 0px 10px #00eaff;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-top: 12px;
+        font-size: 15px;
+        color: #d6f4ff;
+    }
+
+    /* -------------------------------------------- */
+    /* FIXED INPUT + SELECT ALIGNMENT (ADDED ONLY) */
+    /* -------------------------------------------- */
+    input, select {
+        width: 100%;
+        height: 50px;                   /* NEW – keeps all boxes equal */
+        padding: 12px;
+        margin-top: 6px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.4);
+
+        background: rgba(25, 25, 45, 0.95);
+        color: #ffffff;
+        font-size: 15px;
+        outline: none;
+
+        box-sizing: border-box;         /* NEW – prevents size mismatch */
+        appearance: none;               /* NEW – fixes dropdown height issues */
+    }
+
+    /* Dropdown arrow fix */
+    select {
+        background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='18' viewBox='0 0 20 20' width='18' xmlns='http://www.w3.org/2000/svg'><polygon points='0,0 20,0 10,10'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 40px;
+    }
+
+    /* Options visible */
+    select option {
+        background: #1a1a2e;
+        color: white;
+        padding: 8px;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 22px;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        background: linear-gradient(135deg, #00eaff, #008bff);
+        color: #000;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.25s;
+    }
+
+    button:hover {
+        transform: scale(1.03);
+        box-shadow: 0px 0px 16px #00cfff;
+    }
+
+    .result-box {
+        margin-top: 30px;
+        padding: 22px;
+        background: rgba(255,255,255,0.18);
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.3);
+        display: none;
+        animation: fadeInResult 0.8s ease;
+    }
+
+    @keyframes fadeInResult {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+        margin-top: 20px;
+        padding: 18px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    h3 {
+        color: #00eaff;
+        margin-bottom: 10px;
+    }
+
+    ul { padding-left: 20px; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Used Bike Price Predictor</h1>
+
+    <!-- Input Fields -->
+    <label>Bike Brand</label>
+    <select id="brand">
+        <option>Royal Enfield</option>
+        <option>Yamaha</option>
+        <option>Honda</option>
+        <option>TVS</option>
+        <option>Bajaj</option>
+        <option>KTM</option>
+    </select>
+
+    <label>Model Year</label>
+    <input type="number" id="year" placeholder="e.g. 2019">
+
+    <label>Kilometers Driven</label>
+    <input type="number" id="kms" placeholder="e.g. 30000">
+
+    <label>Number of Owners</label>
+    <select id="owner">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+    </select>
+
+    <label>City</label>
+    <select id="city">
+        <option>Mumbai</option>
+        <option>Delhi</option>
+        <option>Bangalore</option>
+        <option>Hyderabad</option>
+        <option>Chennai</option>
+    </select>
+
+    <button onclick="predictPrice()">Predict Price</button>
+
+    <!-- Result Section -->
+    <div class="result-box" id="result">
+        <h2>Predicted Price: ₹<span id="priceValue"></span></h2>
+
+        <div class="section">
+            <h3>Price Factor Breakdown</h3>
+            <p>Age Impact: <span id="ageImpact"></span></p>
+            <p>Kilometers Impact: <span id="kmsImpact"></span></p>
+            <p>Owner Impact: <span id="ownerImpact"></span></p>
+            <p>Brand Value: <span id="brandValue"></span></p>
+            <p>City Premium: <span id="cityPremium"></span></p>
+        </div>
+
+        <div class="section">
+            <h3>Key Factors</h3>
+            <ul id="keyFactors"></ul>
+        </div>
+
+        <div class="section">
+            <h3>Buyer Tips</h3>
+            <ul id="buyerTips"></ul>
+        </div>
+
+        <div class="section">
+            <h3>Seller Tips</h3>
+            <ul id="sellerTips"></ul>
+        </div>
+
+        <div class="section">
+            <h3>Similar Bikes</h3>
+            <ul id="similarBikes"></ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function predictPrice() {
+    let year  = parseInt(document.getElementById("year").value);
+    let kms   = parseInt(document.getElementById("kms").value);
+    let owner = parseInt(document.getElementById("owner").value);
+    let brand = document.getElementById("brand").value;
+    let city  = document.getElementById("city").value;
+
+    if (!year || !kms) {
+        alert("Please enter all fields.");
+        return;
+    }
+
+    // Basic Price Logic
+    let basePrice = 60000;
+    let ageImpact = (2025 - year) * 2500;
+    let kmsImpact = (kms / 1000) * 120;
+    let ownerImpact = -(owner - 1) * 3000;
+
+    let brandValue = {
+        "Royal Enfield": 15000,
+        "Yamaha": 8000,
+        "Honda": 7000,
+        "TVS": 6000,
+        "Bajaj": 5500,
+        "KTM": 12000
+    }[brand];
+
+    let cityPremium = {
+        "Mumbai": 6000,
+        "Delhi": 5000,
+        "Bangalore": 7000,
+        "Hyderabad": 3500,
+        "Chennai": 4000
+    }[city];
+
+    let finalPrice = basePrice - ageImpact - kmsImpact + ownerImpact + brandValue + cityPremium;
+    if (finalPrice < 15000) finalPrice = 15000;
+
+    // Display Results
+    document.getElementById("priceValue").innerText = Math.round(finalPrice);
+
+    document.getElementById("ageImpact").innerText = `- ₹${ageImpact}`;
+    document.getElementById("kmsImpact").innerText = `- ₹${Math.round(kmsImpact)}`;
+    document.getElementById("ownerImpact").innerText = `${ownerImpact >= 0 ? '+' : '-'} ₹${Math.abs(ownerImpact)}`;
+    document.getElementById("brandValue").innerText = `+ ₹${brandValue}`;
+    document.getElementById("cityPremium").innerText = `+ ₹${cityPremium}`;
+
+    renderList("keyFactors", [
+        "Brand popularity impacts resale price",
+        "Older bikes drop faster in value",
+        "Higher kilometers reduce engine life",
+        "Single-owner bikes sell quicker"
+    ]);
+
+    renderList("buyerTips", [
+        "Check service history",
+        "Inspect engine sound",
+        "Verify documents",
+        "Check tyres and brakes"
+    ]);
+
+    renderList("sellerTips", [
+        "Clean the bike before listing",
+        "Upload clear photos",
+        "Highlight maintenance history",
+        "Fix minor issues for better price"
+    ]);
+
+    renderList("similarBikes", [
+        "Yamaha FZ",
+        "Honda Unicorn",
+        "TVS Apache RTR",
+        "Bajaj Pulsar"
+    ]);
+
+    document.getElementById("result").style.display = "block";
+}
+
+function renderList(id, items) {
+    let ul = document.getElementById(id);
+    ul.innerHTML = "";
+    items.forEach(item => {
+        let li = document.createElement("li");
+        li.innerText = item;
+        ul.appendChild(li);
+    });
+}
+</script>
+
+</body>
+</html>
